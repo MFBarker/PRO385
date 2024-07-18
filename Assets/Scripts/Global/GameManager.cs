@@ -7,10 +7,14 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 
+    [SerializeField] GameObject pauseUI;
+    [SerializeField] GameObject gameUI;
+
     enum eState
     { 
         Title,
         InGame,
+        Paused,
         End
     }
 
@@ -34,6 +38,9 @@ public class GameManager : MonoBehaviour
                 break;
             case eState.End:
                 break;
+            case eState.Paused:
+                
+                break;
             default:
                 break;
         }
@@ -52,5 +59,19 @@ public class GameManager : MonoBehaviour
     public void ToTitle()
     {
         SceneManager.LoadSceneAsync("Title", LoadSceneMode.Single);
+    }
+
+    /* https://gamedevbeginner.com/the-right-way-to-pause-the-game-in-unity/ */
+    public void OnPause() 
+    {
+        Time.timeScale = 0.0f;
+        pauseUI.SetActive(true);
+        gameUI.SetActive(false);
+    }
+    public void OnUnPause()
+    {
+        Time.timeScale = 1.0f;
+        pauseUI.SetActive(false);
+        gameUI.SetActive(true);
     }
 }
