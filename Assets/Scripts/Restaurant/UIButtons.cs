@@ -1,25 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UIButtons : MonoBehaviour
 {
-    enum RButtons
+    public enum RButtons
     { 
         Kitchen,
         Bar,
         Drinks
     }
 
-    [SerializeField] RButtons buttonType;
-    [SerializeField] Camera camera;
+    [SerializeField] RButtons buttonType { get; set; }
+    Camera camera = Camera.main;
 
-    Vector3 kitchen = new Vector3(-25, 0, 0);
+    public Vector3 kitchen = new Vector3(-25, 0, 0);
     Vector3 bar = new Vector3(0, 0, 0);
     Vector3 drinks = new Vector3(25, 0, 0);
-    private void Start()
-    {
-    }
 
     // Update is called once per frame
     void Update()
@@ -27,8 +25,7 @@ public class UIButtons : MonoBehaviour
         
     }
 
-    //test
-    private void OnMouseDown()
+    public void OnButtonClick()
     {
         switch (buttonType)
         {
