@@ -24,7 +24,7 @@ public class UIButtons : MonoBehaviour
     [SerializeField] ButtonLocation buttonLocation;
     [SerializeField] Button buttonObjectLeft;
     [SerializeField] Button buttonObjectRight;
-    Camera camera = null;
+    Camera gameCamera = null;
 
     Vector3 kitchen = new Vector3(-25, 0, -10);
     Vector3 bar = new Vector3(0, 0, -10);
@@ -37,17 +37,16 @@ public class UIButtons : MonoBehaviour
      
      */
 
-    // Update is called once per frame
     private void Awake()
     {
         /* Gets Secondary Camera to Move Around */
-        camera = GameObject.FindGameObjectWithTag("GameCamera").GetComponent<Camera>();
+        gameCamera = GameObject.FindGameObjectWithTag("GameCamera").GetComponent<Camera>();
     }
 
     private void Update()
     {
-        if (camera.transform.position == kitchen && buttonObjectLeft.IsActive()) HideButton("Left");
-        if (camera.transform.position == drinks && buttonObjectRight.IsActive()) HideButton("Right");
+        if (gameCamera.transform.position == kitchen && buttonObjectLeft.IsActive()) HideButton("Left");
+        if (gameCamera.transform.position == drinks && buttonObjectRight.IsActive()) HideButton("Right");
     }
 
     /// <summary>
@@ -59,7 +58,7 @@ public class UIButtons : MonoBehaviour
         {
             case ButtonLocation.Left:
                 //Kitchen Hides Buttons (Update)
-                if (camera.transform.position == bar)
+                if (gameCamera.transform.position == bar)
                 {
                     LocationChange(RButtons.Kitchen); 
                 }
@@ -71,13 +70,13 @@ public class UIButtons : MonoBehaviour
                 }
                 break;
             case ButtonLocation.Right:
-                if (camera.transform.position == kitchen) 
+                if (gameCamera.transform.position == kitchen) 
                 {
                     //unhide left, go to bar
                     UnHideButton("Left");
                     LocationChange(RButtons.Bar);
                 }
-                else if (camera.transform.position == bar)
+                else if (gameCamera.transform.position == bar)
                 {
                     LocationChange(RButtons.Drinks);
                 }
@@ -109,7 +108,7 @@ public class UIButtons : MonoBehaviour
     }
 
     /// <summary>
-    /// Moves the camera based on where the player needs to go.
+    /// Moves the gameCamera based on where the player needs to go.
     /// </summary>
     /// <param name="buttonType">Where the player is moving to.</param>
     private void LocationChange(RButtons buttonType)
@@ -119,17 +118,17 @@ public class UIButtons : MonoBehaviour
             case RButtons.Kitchen:
                 //-25,0
                 Debug.Log("To Kitchen");
-                camera.transform.position = kitchen;
+                gameCamera.transform.position = kitchen;
                 break;
             case RButtons.Bar:
                 //0,0
                 Debug.Log("To Bar");
-                camera.transform.position = bar;
+                gameCamera.transform.position = bar;
                 break;
             case RButtons.Drinks:
                 //25,0
                 Debug.Log("To Drinks");
-                camera.transform.position = drinks;
+                gameCamera.transform.position = drinks;
                 break;
             default:
                 break;
