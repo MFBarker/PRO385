@@ -60,6 +60,7 @@ public class RestaurantManager : MonoBehaviour
     public void Quit_Yes()
     {
         Quit_No();
+        OnUnPause();
         GameManager.Instance.OnToTitle();
     }
     public void Quit_No()
