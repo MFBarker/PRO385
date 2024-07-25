@@ -11,6 +11,7 @@ public class TitleManager : MonoBehaviour
     [SerializeField] GameObject SaveSelectUI;
 
     Camera gameCamera = null;
+    GameObject settingsButton = null;
 
     bool goTitle = false;
     bool goSaveSelect = false;
@@ -29,10 +30,17 @@ public class TitleManager : MonoBehaviour
         if (SaveSelectUI.activeSelf) SaveSelectUI.SetActive(false);
         //Gets Secondary Camera to Move Around
         gameCamera = GameObject.FindGameObjectWithTag("GameCamera").GetComponent<Camera>();
+        //gameCamera.transform.position = titleXYZ;
+        settingsButton = GameObject.FindGameObjectWithTag("Settings");
+
+        goTitle = false;
+        goSaveSelect = false;
+
+        Debug.Log("TitleAwake");
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         if (goSaveSelect) 
         {
@@ -50,6 +58,16 @@ public class TitleManager : MonoBehaviour
         }
     }
 
+    public void OnClickPlay()
+    {
+        GameManager.Instance.OnToGame();
+    }
+
+    public void OnClickSettings()
+    { 
+        GameManager.Instance.OnClickSettings();
+    }
+
     /// <summary>
     /// Disables the Title UI and Enables the Transition Over to the Save Select Screen.
     /// </summary>
@@ -57,7 +75,9 @@ public class TitleManager : MonoBehaviour
     {
         //move to save select
         TitleUI.SetActive(false);
+        settingsButton.SetActive(false);
         goSaveSelect = true;
+        Debug.Log("Start");
     }
     /// <summary>
     /// Disables the Save Select UI and Enables the Transition Over to the Title Screen.
@@ -66,6 +86,7 @@ public class TitleManager : MonoBehaviour
     {
         //move to title
         SaveSelectUI.SetActive(false);
+        settingsButton.SetActive(false);
         goTitle = true;
     }
 
@@ -83,20 +104,22 @@ public class TitleManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator MoveCamera(Vector3 start, Vector3 end, float duration)
     {
-        if (gameCamera.transform.position != end)
+        Debug.Log("Couroutine Start");
+
+        for (float t = 0.0f; t < duration; t += Time.deltaTime)
         {
-            for (float t = 0f; t < duration; t += Time.deltaTime)
-            {
-                gameCamera.transform.position = Vector3.MoveTowards(start, end, transitionSpeedScaler * (t / duration));
-                yield return 0;
-            }
-
+            gameCamera.transform.position = Vector3.MoveTowards(start, end, transitionSpeedScaler * (t / duration));
+            Debug.Log("Moving");
+            yield return 0;
         }
-        gameCamera.transform.position = end;
 
+        gameCamera.transform.position = end;
+        Debug.Log("Done Moving");
         //re enable ui
         if (end == titleXYZ) yield return EndTransition(TitleUI);
         else if (end == saveXYZ) yield return EndTransition(SaveSelectUI);
+
+        Debug.Log("Couroutine Complete");
 
         yield break;
     }
@@ -109,6 +132,9 @@ public class TitleManager : MonoBehaviour
     IEnumerator EndTransition(GameObject ui)
     {
         ui.SetActive(true);
+        settingsButton.SetActive(true);
         yield return 0;
+
+        Debug.Log("Transition Complete");
     }
 }

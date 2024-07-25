@@ -1,25 +1,23 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UIButtons;
+using UnityEngine.UI;
 
-public class GameManager : MonoBehaviour
-{
+public class GameManager : Singleton<GameManager>
+{ 
+    #region _Variables
     [Header("BGM")]
     [SerializeField] AudioSource Title;
     [SerializeField] AudioSource InGame;
     [SerializeField] AudioSource End;
-    [Header("Restaurant")]
-    [SerializeField] GameObject pauseUI;
-    [SerializeField] GameObject gameUI;
+    
 
     [SerializeField] eState currentScene;
 
     //Settings
     float m_masterVolumeBGM = 1.0f;
     bool m_mutedBGM = false;
+    #endregion
 
     enum eState
     { 
@@ -67,23 +65,13 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region In-Game
-    /* https://gamedevbeginner.com/the-right-way-to-pause-the-game-in-unity/ */
-    public void OnPause() 
-    {
-        Time.timeScale = 0.0f;
-        pauseUI.SetActive(true);
-        gameUI.SetActive(false);
-        /*InGame.volume = MasterVolume;*/
-    }
-    public void OnUnPause()
-    {
-        Time.timeScale = 1.0f;
-        pauseUI.SetActive(false);
-        gameUI.SetActive(true);
-        /*InGame.volume = 1.0f;*/
-    }
+    
 
-    //Restaurant Buttons in UIButtons
+    //Settings
+    public void OnClickSettings()
+    {
+        Debug.Log("Settings (Not Implemented)");
+    }
 
     #endregion
 

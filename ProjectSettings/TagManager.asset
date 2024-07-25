@@ -5,7 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - GameCamera
-  - KitchenTOBar
+  - Settings
+  - GameManager
   layers:
   - Default
   - TransparentFX

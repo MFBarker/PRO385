@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using static UnityEditor.FilePathAttribute;
 
-public class UIButtons : MonoBehaviour
+public class RestaurantButtons : MonoBehaviour
 {
     enum RButtons
     { 
