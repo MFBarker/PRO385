@@ -109,12 +109,12 @@ public class TitleManager : MonoBehaviour
         for (float t = 0.0f; t < duration; t += Time.deltaTime)
         {
             gameCamera.transform.position = Vector3.MoveTowards(start, end, transitionSpeedScaler * (t / duration));
-            Debug.Log("Moving");
+            //Debug.Log("Moving");
             yield return 0;
         }
 
         gameCamera.transform.position = end;
-        Debug.Log("Done Moving");
+        //Debug.Log("Done Moving");
         //re enable ui
         if (end == titleXYZ) yield return EndTransition(TitleUI);
         else if (end == saveXYZ) yield return EndTransition(SaveSelectUI);
@@ -135,6 +135,6 @@ public class TitleManager : MonoBehaviour
         settingsButton.SetActive(true);
         yield return 0;
 
-        Debug.Log("Transition Complete");
+        //Debug.Log("Transition Complete");
     }
 }
