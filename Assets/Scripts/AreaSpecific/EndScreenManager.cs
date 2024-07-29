@@ -5,9 +5,9 @@ using UnityEngine;
 public class EndScreenManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+        GameManager.Instance.GetBGM("End").Play();
     }
 
     // Update is called once per frame

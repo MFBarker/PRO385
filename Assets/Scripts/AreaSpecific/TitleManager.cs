@@ -39,6 +39,11 @@ public class TitleManager : MonoBehaviour
         Debug.Log("TitleAwake");
     }
 
+    private void Start()
+    {
+        GameManager.Instance.GetBGM("Title").Play();
+    }
+
     // Update is called once per frame
     void LateUpdate()
     {

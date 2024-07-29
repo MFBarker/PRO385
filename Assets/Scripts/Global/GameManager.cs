@@ -10,56 +10,27 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] AudioSource Title;
     [SerializeField] AudioSource InGame;
     [SerializeField] AudioSource End;
-    
-
-    [SerializeField] eState currentScene;
 
     //Settings
     float m_masterVolumeBGM = 1.0f;
     bool m_mutedBGM = false;
     #endregion
 
-    enum eState
-    { 
-        Title,
-        InGame,
-        End
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        switch (currentScene)
-        {
-            case eState.Title:
-                //starts on title
-                //if (!Title.isPlaying) Title.Play();
-                break;
-            case eState.InGame:
-                //if (!InGame.isPlaying) InGame.Play();
-                break;
-            case eState.End:
-                //if (!End.isPlaying) End.Play();
-                break;
-            default:
-                break;
-        }
-    }
-
     #region SceneTransitions
     public void OnToGame()
     {
-        /*if (Title.isPlaying) Title.Stop();
-        if (End.isPlaying) End.Stop();*/
+        StopAll();
         SceneManager.LoadSceneAsync("Restaurant", LoadSceneMode.Single);
     }
     public void OnToEnd()
     {
+        StopAll();
         SceneManager.LoadSceneAsync("End", LoadSceneMode.Single);
     }
 
     public void OnToTitle()
     {
+        StopAll();
         SceneManager.LoadSceneAsync("Title", LoadSceneMode.Single);
     }
     #endregion
@@ -77,5 +48,34 @@ public class GameManager : Singleton<GameManager>
 
     #region End
     //Put stuff here
+    #endregion
+
+    #region Audio
+    private void StopAll()
+    { 
+        Title.Stop();
+        InGame.Stop();
+        End.Stop();
+    }
+
+    public AudioSource GetBGM(string scene)
+    {
+        if (scene.ToLower() == "title")
+        {
+            return Title;
+        }
+        else if (scene.ToLower() == "restaurant")
+        {
+            return InGame;
+        }
+        else if (scene.ToLower() == "end")
+        { 
+            return End;
+        }
+        else 
+        {
+            return null;
+        }
+    }
     #endregion
 }

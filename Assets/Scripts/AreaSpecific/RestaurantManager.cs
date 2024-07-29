@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class RestaurantManager : MonoBehaviour
@@ -14,11 +15,17 @@ public class RestaurantManager : MonoBehaviour
     [SerializeField] GameObject drinksUI;
 
     Camera gameCamera = null;
-    int[] x_Location = { -25, 0, 25 }; 
+    int[] x_Location = { -25, 0, 25 };
+
 
     void Awake()
     {
         gameCamera = GameObject.FindGameObjectWithTag("GameCamera").GetComponent<Camera>();
+    }
+
+    private void Start()
+    {
+        GameManager.Instance.GetBGM("Restaurant").Play();
     }
 
     // Update is called once per frame
