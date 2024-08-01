@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 public class EndScreenManager : MonoBehaviour
@@ -13,7 +14,9 @@ public class EndScreenManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //BGM Volume
+        if (GameManager.Instance.GetBGMMuted() == false) GameManager.Instance.GetBGM("End").volume = 1.0f; //not muted
+        else if (GameManager.Instance.GetBGMMuted() == true) GameManager.Instance.GetBGM("End").volume = 0.0f; //muted
     }
 
     public void QuitToTitle()

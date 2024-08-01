@@ -16,6 +16,7 @@ public class RestaurantManager : MonoBehaviour
 
     Camera gameCamera = null;
     int[] x_Location = { -25, 0, 25 };
+    bool paused = false;
 
 
     void Awake()
@@ -31,6 +32,7 @@ public class RestaurantManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //UI
         if (gameCamera.transform.position.x == x_Location[0]) //kitchen
         {
             if (!kitchenUI.activeSelf)
@@ -55,6 +57,9 @@ public class RestaurantManager : MonoBehaviour
                 drinksUI.SetActive(true);
             }
         }
+        //BGM Volume
+        if (GameManager.Instance.GetBGMMuted() == false && paused == false) GameManager.Instance.GetBGM("Restaurant").volume = 1.0f; //not muted
+        else if (GameManager.Instance.GetBGMMuted() == true) GameManager.Instance.GetBGM("Restaurant").volume = 0.0f; //muted
     }
 
     private void DisableAllUI()
@@ -67,18 +72,18 @@ public class RestaurantManager : MonoBehaviour
     /* https://gamedevbeginner.com/the-right-way-to-pause-the-game-in-unity/ */
     public void OnPause()
     {
+        paused = true;
         Debug.Log("pause");
         Time.timeScale = 0.0f;
         pauseUI.SetActive(true);
         gameUI.SetActive(false);
-        /*InGame.volume = MasterVolume;*/
     }
     public void OnUnPause()
     {
+        paused = false;
         Time.timeScale = 1.0f;
         pauseUI.SetActive(false);
         gameUI.SetActive(true);
-        /*InGame.volume = 1.0f;*/
     }
 
     //Pause Menu

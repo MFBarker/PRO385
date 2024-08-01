@@ -50,6 +50,7 @@ MonoBehaviour:
   Title: {fileID: 3831938146810102735}
   InGame: {fileID: 1065574717882625091}
   End: {fileID: 3912142485845686560}
+  SettingsUIPrefab: {fileID: 7340842261231091129, guid: 3ba4924d6fd28e84cb1d65694bcf41b9, type: 3}
 --- !u!82 &3831938146810102735
 AudioSource:
   m_ObjectHideFlags: 0

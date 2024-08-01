@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using static Unity.Collections.AllocatorManager;
 
@@ -61,6 +62,10 @@ public class TitleManager : MonoBehaviour
             StartCoroutine(MoveCamera(saveXYZ, titleXYZ, transitionDuration));
             goTitle = false;
         }
+
+        //BGM Volume
+        if (GameManager.Instance.GetBGMMuted() == false) GameManager.Instance.GetBGM("Title").volume = 1.0f; //not muted
+        else if (GameManager.Instance.GetBGMMuted() == true) GameManager.Instance.GetBGM("Title").volume = 0.0f; //muted
     }
 
     public void OnClickPlay()

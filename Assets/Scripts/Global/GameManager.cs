@@ -10,10 +10,14 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] AudioSource Title;
     [SerializeField] AudioSource InGame;
     [SerializeField] AudioSource End;
-
+    [Header("Settings")]
+    [SerializeField] GameObject SettingsUIPrefab;
+    
     //Settings
-    float m_masterVolumeBGM = 1.0f;
     bool m_mutedBGM = false;
+    bool m_mutedSFX = false;
+
+    GameObject m_settingsUI = null;
     #endregion
 
     #region SceneTransitions
@@ -35,15 +39,50 @@ public class GameManager : Singleton<GameManager>
     }
     #endregion
 
-    #region In-Game
-    
-
-    //Settings
+    #region Settings
     public void OnClickSettings()
     {
-        Debug.Log("Settings (Not Implemented)");
+        if (SettingsUIPrefab != null)
+        {
+            Debug.Log("test");
+            if (m_settingsUI == null)
+            {
+                //instantiate object
+                m_settingsUI = GameObject.Instantiate(SettingsUIPrefab);
+                m_settingsUI.transform.SetParent(GameObject.FindGameObjectWithTag("Canvas").transform, false);
+                //Enable UI
+                //Debug.Log("Null Game Object");
+            }
+            else
+            {
+                //Enable UI
+                m_settingsUI.SetActive(true);
+            }
+        }
+        else 
+        {
+            Debug.Log("Settings (Not Implemented)");
+        }
     }
 
+    public void SetBGMMuted(bool bgm)
+    {
+        m_mutedBGM = bgm;
+    }
+
+    public void SetSFXMuted(bool sfx)
+    {
+        m_mutedSFX = sfx;
+    }
+
+    public bool GetBGMMuted() {  return m_mutedBGM; }
+    public bool GetSFXMuted() {  return m_mutedBGM; }
+
+    public float GetSFXVolume() 
+    {
+        if (m_mutedSFX == false) return 1.0f;  //not muted
+        else return 0.0f; //muted
+    }
     #endregion
 
     #region End
@@ -56,6 +95,8 @@ public class GameManager : Singleton<GameManager>
         Title.Stop();
         InGame.Stop();
         End.Stop();
+
+        m_settingsUI = null;
     }
 
     public AudioSource GetBGM(string scene)
