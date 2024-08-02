@@ -6,9 +6,12 @@ using UnityEngine.UI;
 
 public class RestaurantManager : MonoBehaviour
 {
+    [Header("General UI")]
     [SerializeField] GameObject pauseUI;
     [SerializeField] GameObject gameUI;
     [SerializeField] GameObject quitConfirmUI;
+    [SerializeField] GameObject customerInfoUI;
+    [SerializeField] GameObject customerUI;
     [Header("Area Specific UI")]
     [SerializeField] GameObject kitchenUI;
     [SerializeField] GameObject barUI;
@@ -126,17 +129,29 @@ public class RestaurantManager : MonoBehaviour
         GameManager.Instance.OnClickSettings();
     }
 
-
-    public void tempCheck()
-    {
-        GameManager.Instance.OnToTitle();
-    }
-
     public void tempEnd()
     { 
         GameManager.Instance.OnToEnd();
     }
 
+    #region CustomerInfo
+    public void Click_Character() 
+    {
+        Debug.Log("test");
+        customerUI.SetActive(true);
+    }
+    public void Click_OutCharacter()
+    {
+        customerUI.SetActive(false);
+    }
+    public void Click_OutInfo()
+    {
+        customerInfoUI.SetActive(false);
+        //Unpause
+        gameUI.SetActive(true);
+        Time.timeScale = 1.0f;
+    }
+    #endregion
 
     #region kitchen
     public void Kitchen_Fridge()
@@ -164,7 +179,10 @@ public class RestaurantManager : MonoBehaviour
     #region bar
     public void Bar_CustomerInfo()
     {
-        Debug.Log("Customer Info");
+        customerInfoUI.SetActive(true);
+        //Pause Game
+        gameUI.SetActive(false);
+        Time.timeScale = 0.0f;
     }
     public void Bar_Orders()
     {
