@@ -99,7 +99,7 @@ public class RestaurantManager : MonoBehaviour
     public void OnClickQuit()
     {
         quitConfirmUI.SetActive(true);
-        /*https://stackoverflow.com/questions/67934167/disable-user-from-interacting-in-input-field-dropdown-and-toggle-in-unity*/
+        /*https://stackoverflow.com/questions/67934167/disable-user-from-interacting-in-input-field-dropdown-and-toggle-in-unity */
         var uiElements = pauseUI.GetComponentsInChildren<Selectable>();
         foreach (var uiElement in uiElements)
         {
