@@ -4,6 +4,19 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/*
+ Game Loop: 
+* Choose 2-4 customers at random
+* Have one or two come in at a time (depending on seat availiability)
+* Take their order
+* Once order is taken, have timer count down (customer patience)
+* serve order as fast as possible, else customer gets mad and leaves
+* Have waiting timer to displace all customers (so all customers don't come all at once)
+* Loop Until all Customers have been gone through
+ 
+* WIN: Serve all customers (ranking based on number of customers that left [S = 0, A = 1, C = 2, D = 3])
+* LOSE: Fail All Customers (all customers leave)
+ */
 public class RestaurantManager : MonoBehaviour
 {
     [Header("General UI")]

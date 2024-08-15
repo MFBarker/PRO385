@@ -85,10 +85,6 @@ public class GameManager : Singleton<GameManager>
     }
     #endregion
 
-    #region End
-    //Put stuff here
-    #endregion
-
     #region Audio
     private void StopAll()
     { 
