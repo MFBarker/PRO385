@@ -1,7 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Burst.Intrinsics;
+using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 /*
@@ -29,11 +34,26 @@ public class RestaurantManager : MonoBehaviour
     [SerializeField] GameObject kitchenUI;
     [SerializeField] GameObject barUI;
     [SerializeField] GameObject drinksUI;
-
+    [SerializeField] Image[] slots = new Image[3];
+    //General
     Camera gameCamera = null;
     int[] x_Location = { -25, 0, 25 };
     bool paused = false;
+    //Customer Stuff
+    bool canSeat = true;
+    float coolDown = 30.0f;
+    bool done;
 
+    Customer[] seats = { null, null, null };
+    float[] timers = { 0.0f, 0.0f, 0.0f };
+    CustomerAI[] customerAIs =
+    {
+        new CustomerAI("Akio Tanaka","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png",""),
+        new CustomerAI("Haruto Nakamura","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png",""),
+        new CustomerAI("Hayato Kami","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png",""),
+        new CustomerAI("Logan Smith","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png","")
+    };
+    List<Customer> hasServed = new List<Customer>(); 
 
     void Awake()
     {
@@ -52,7 +72,7 @@ public class RestaurantManager : MonoBehaviour
         if (gameCamera.transform.position.x == x_Location[0]) //kitchen
         {
             if (!kitchenUI.activeSelf)
-            { 
+            {
                 DisableAllUI();
                 kitchenUI.SetActive(true);
             }
@@ -76,15 +96,167 @@ public class RestaurantManager : MonoBehaviour
         //BGM Volume
         if (GameManager.Instance.GetBGMMuted() == false && paused == false) GameManager.Instance.GetBGM("Restaurant").volume = 1.0f; //not muted
         else if (GameManager.Instance.GetBGMMuted() == true) GameManager.Instance.GetBGM("Restaurant").volume = 0.0f; //muted
+        //Game Loop
+        if (IsSeatOpen() && canSeat)
+        {
+            SeatCustomers();
+        }
+        
+        if (canSeat == false && coolDown > 0) coolDown -= Time.deltaTime;
+        if (coolDown <= 0 && hasServed.Count < 4)
+        {
+            //cooldown reset
+            canSeat = true;
+            coolDown = 60;
+            Debug.Log("ALERT: Cool Down Reset!!");
+        }
+        //if (hasServed.Count == 4)
+        //{
+        //    done = true;
+        //}
+
+        //end conditions
+        if (done && IsEmpty())
+        {
+            //done
+            tempEnd();
+        }
     }
 
     private void DisableAllUI()
-    { 
+    {
         kitchenUI.SetActive(false);
         barUI.SetActive(false);
         drinksUI.SetActive(false);
     }
 
+    #region Game Loop
+    bool IsSeatOpen()
+    {
+        foreach (Customer c in seats)
+        {
+            if (c == null) return true;
+        }
+        return false;
+    }
+
+    bool IsEmpty()
+    {
+        foreach (Customer c in seats)
+        {
+            if (c != null) return false;
+        }
+        return true;
+    }
+
+    //seat customer
+    //wait five-ish seconds
+    //add popup for order
+    //take order
+    //start countdown (personality based)
+    //serve customer or fail
+    private void SeatCustomers()
+    {
+        if (hasServed.Count == 4) return;
+        //get slot
+        if (seats[0] == null && canSeat == true)
+        {
+            //set customer to slot
+            seats[0] = GetRandomCustomer();
+            if (seats[0] == null) { return; }//null check
+            //put customer sprite there
+            slots[0].gameObject.SetActive(true);
+            slots[0].sprite = GetCustomerAI(seats[0]).spriteNormal;
+            //start timer
+            timers[0] = GetCustomerAI(seats[0]).SetTimer();
+            
+            hasServed.Add(seats[0]);
+            canSeat = false;
+        }
+        else if (seats[1] == null && canSeat == true)
+        {
+            //set customer to slot
+            seats[1] = GetRandomCustomer();
+            if (seats[1] == null) { return; }//null check
+            //put customer sprite there
+            slots[1].gameObject.SetActive(true);
+            slots[1].sprite = GetCustomerAI(seats[0]).spriteNormal;
+            //start timer
+            timers[1] = GetCustomerAI(seats[0]).SetTimer();
+            hasServed.Add(seats[1]);
+            canSeat = false;
+        }
+        else if (seats[2] == null && canSeat == true)
+        {
+            //set customer to slot
+            seats[2] = GetRandomCustomer();
+            if (seats[2] == null) { return; }//null check
+            //put customer sprite there
+            slots[2].gameObject.SetActive(true);
+            slots[2].sprite = GetCustomerAI(seats[0]).spriteNormal;
+            //start timer
+            timers[2] = GetCustomerAI(seats[0]).SetTimer();
+            hasServed.Add(seats[2]);
+            canSeat = false;
+        }
+    }
+
+    private Customer GetRandomCustomer()
+    {
+        Customer c = null;
+        bool valid = false;
+        while (valid == false)
+        {
+            c = Customers.Instance.GetCustomerByIndex(Random.Range(0, 3));
+            if (!seats.Contains(c) && !hasServed.Contains(c)) valid = true;
+        }
+
+        return c;
+    }
+
+    private CustomerAI GetCustomerAI(Customer c)
+    {
+        foreach (CustomerAI ai in customerAIs)
+        {
+            if (ai.customer == c)
+            { 
+                return ai;
+            }
+        }
+        return null;
+    }
+
+    private void RemoveCustomer(bool isAngry, int slot)
+    {
+        if (isAngry) 
+        {
+            //is Angry
+
+            //change to mad sprite?
+            slots[slot].sprite = GetCustomerAI(seats[0]).spriteMad;
+            //WaitForSeconds(3);
+        }   
+        else
+        {
+            //not Angry
+        }
+        //remove character
+        slots[slot].gameObject.SetActive(false);
+        //clear seat spot
+        seats[slot] = null;
+        timers[slot] = 0.0f;
+    }
+    //ServeCustomer
+    //Take Order
+    //Start Customer Timer
+    //Fail Customer
+    void FailCustomer()
+    { 
+
+    }
+    #endregion
+
+    #region Settings/PauseMenu
     /* https://gamedevbeginner.com/the-right-way-to-pause-the-game-in-unity/ */
     public void OnPause()
     {
@@ -136,7 +308,6 @@ public class RestaurantManager : MonoBehaviour
             uiElement.interactable = true;
         }
     }
-
     public void OnClickSettings()
     {
         GameManager.Instance.OnClickSettings();
@@ -146,6 +317,7 @@ public class RestaurantManager : MonoBehaviour
     { 
         GameManager.Instance.OnToEnd();
     }
+    #endregion
 
     #region CustomerInfo
     public void Click_Character() 

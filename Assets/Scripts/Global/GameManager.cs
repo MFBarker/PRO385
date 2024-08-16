@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
-{ 
+{
     #region _Variables
     [Header("BGM")]
     [SerializeField] AudioSource Title;
@@ -12,12 +12,14 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] AudioSource End;
     [Header("Settings")]
     [SerializeField] GameObject SettingsUIPrefab;
-    
+
     //Settings
     bool m_mutedBGM = false;
     bool m_mutedSFX = false;
 
     GameObject m_settingsUI = null;
+
+    int m_score = 0;
     #endregion
 
     #region SceneTransitions
@@ -83,6 +85,11 @@ public class GameManager : Singleton<GameManager>
         if (m_mutedSFX == false) return 1.0f;  //not muted
         else return 0.0f; //muted
     }
+
+    //score
+    public int GetScore() { return m_score; }
+    public void SetScore(int score) { m_score = score; }
+
     #endregion
 
     #region Audio

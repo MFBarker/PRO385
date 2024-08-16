@@ -23,7 +23,6 @@ public class Customer
     public string pictureTexture;
     public string occupation;
     public CustomerPersonality personality;
-
     /*
     https://stackoverflow.com/questions/26043161/how-to-reference-a-texture-with-a-string
     CS0619: Resources.LoadAssetAtPath is obsolete => AssetDatabase.LoadAssetAtPath
@@ -53,6 +52,7 @@ public class Customers : Singleton<Customers>
     };
 
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -73,6 +73,15 @@ public class Customers : Singleton<Customers>
             }
         }
 
+        return null;
+    }
+
+    public Customer GetCustomerByIndex(int num)
+    {
+        if (num < customers.Length && num >= 0)
+        { 
+            return customers[num];
+        }
         return null;
     }
 }
