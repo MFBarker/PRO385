@@ -1269,7 +1269,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 216241517}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38253bee4f96a194fad677cad6ad48c5, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f9c0f91e8022564cb3a610674ddc42e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   CustomerName: Akio Tanaka
@@ -2277,7 +2277,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: 'Shochu
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3481,7 +3483,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: 'Whiskey
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4491,7 +4495,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 611382429}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38253bee4f96a194fad677cad6ad48c5, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f9c0f91e8022564cb3a610674ddc42e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   CustomerName: Haruto Nakamura
@@ -4628,11 +4632,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38253bee4f96a194fad677cad6ad48c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CustomerName: 
-  pictureUI: {fileID: 0}
-  nameUI: {fileID: 0}
-  jobUI: {fileID: 0}
-  personalityUI: {fileID: 0}
 --- !u!1 &700751742
 GameObject:
   m_ObjectHideFlags: 0
@@ -6489,7 +6488,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: 'Sake
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7694,7 +7695,7 @@ GameObject:
   - component: {fileID: 1444383569}
   - component: {fileID: 1444383573}
   - component: {fileID: 1444383572}
-  - component: {fileID: 1444383571}
+  - component: {fileID: 1444383574}
   - component: {fileID: 1444383570}
   m_Layer: 5
   m_Name: 3 - Logan Smith
@@ -7779,7 +7780,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1444383571}
+      - m_Target: {fileID: 1444383574}
         m_TargetAssemblyTypeName: CustomerInfoButtons, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
@@ -7791,23 +7792,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &1444383571
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1444383568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38253bee4f96a194fad677cad6ad48c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CustomerName: Logan Smith
-  pictureUI: {fileID: 174248496}
-  nameUI: {fileID: 8540388}
-  jobUI: {fileID: 334100198}
-  personalityUI: {fileID: 1894388239}
 --- !u!114 &1444383572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7846,6 +7830,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1444383568}
   m_CullTransparentMesh: 1
+--- !u!114 &1444383574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444383568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f9c0f91e8022564cb3a610674ddc42e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CustomerName: Logan Smith
+  pictureUI: {fileID: 174248496}
+  nameUI: {fileID: 8540388}
+  jobUI: {fileID: 334100198}
+  personalityUI: {fileID: 1894388239}
 --- !u!1 &1476489862
 GameObject:
   m_ObjectHideFlags: 0
@@ -9421,7 +9422,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1835484657}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38253bee4f96a194fad677cad6ad48c5, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f9c0f91e8022564cb3a610674ddc42e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   CustomerName: Hayato Kami
@@ -10014,7 +10015,6 @@ GameObject:
   - component: {fileID: 1952232287}
   - component: {fileID: 1952232291}
   - component: {fileID: 1952232290}
-  - component: {fileID: 1952232289}
   - component: {fileID: 1952232288}
   m_Layer: 5
   m_Name: 4 - ????
@@ -10099,7 +10099,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1952232289}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: CustomerInfoButtons, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
@@ -10111,23 +10111,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &1952232289
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1952232286}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38253bee4f96a194fad677cad6ad48c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CustomerName: Logan Smith
-  pictureUI: {fileID: 174248496}
-  nameUI: {fileID: 8540388}
-  jobUI: {fileID: 334100198}
-  personalityUI: {fileID: 1894388239}
 --- !u!114 &1952232290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10636,7 +10619,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: Beer
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

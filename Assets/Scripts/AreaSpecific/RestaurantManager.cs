@@ -48,12 +48,15 @@ public class RestaurantManager : MonoBehaviour
     float[] timers = { 0.0f, 0.0f, 0.0f };
     CustomerAI[] customerAIs =
     {
-        new CustomerAI("Akio Tanaka","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png",""),
-        new CustomerAI("Haruto Nakamura","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png",""),
-        new CustomerAI("Hayato Kami","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png",""),
-        new CustomerAI("Logan Smith","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png","")
+        new CustomerAI("Akio Tanaka","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png","sake"),
+        new CustomerAI("Haruto Nakamura","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png","beer"),
+        new CustomerAI("Hayato Kami","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png","beer"),
+        new CustomerAI("Logan Smith","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png","whiskey")
     };
     List<Customer> hasServed = new List<Customer>(); 
+
+    //Serve Customers
+    List<string> items = new List<string>();
 
     void Awake()
     {
@@ -110,10 +113,6 @@ public class RestaurantManager : MonoBehaviour
             coolDown = 60;
             Debug.Log("ALERT: Cool Down Reset!!");
         }
-        //if (hasServed.Count == 4)
-        //{
-        //    done = true;
-        //}
 
         //end conditions
         if (done && IsEmpty())
@@ -157,12 +156,17 @@ public class RestaurantManager : MonoBehaviour
     //serve customer or fail
     private void SeatCustomers()
     {
-        if (hasServed.Count == 4) return;
+        if (hasServed != null)
+        {
+            if (hasServed.Count == 4) done = true;
+            return;
+        }
         //get slot
         if (seats[0] == null && canSeat == true)
         {
             //set customer to slot
             seats[0] = GetRandomCustomer();
+            Debug.Log(seats[0]._name);
             if (seats[0] == null) { return; }//null check
             //put customer sprite there
             slots[0].gameObject.SetActive(true);
@@ -177,6 +181,7 @@ public class RestaurantManager : MonoBehaviour
         {
             //set customer to slot
             seats[1] = GetRandomCustomer();
+            Debug.Log(seats[1]._name);
             if (seats[1] == null) { return; }//null check
             //put customer sprite there
             slots[1].gameObject.SetActive(true);
@@ -190,6 +195,7 @@ public class RestaurantManager : MonoBehaviour
         {
             //set customer to slot
             seats[2] = GetRandomCustomer();
+            Debug.Log(seats[1]._name);
             if (seats[2] == null) { return; }//null check
             //put customer sprite there
             slots[2].gameObject.SetActive(true);
@@ -201,6 +207,10 @@ public class RestaurantManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets Random Customer. Verifies that the character has not already been seated.
+    /// </summary>
+    /// <returns>Returns customer if there is one still avaliable, else null</returns>
     private Customer GetRandomCustomer()
     {
         Customer c = null;
@@ -210,10 +220,14 @@ public class RestaurantManager : MonoBehaviour
             c = Customers.Instance.GetCustomerByIndex(Random.Range(0, 3));
             if (!seats.Contains(c) && !hasServed.Contains(c)) valid = true;
         }
-
         return c;
     }
 
+    /// <summary>
+    /// Gets Customer AI
+    /// </summary>
+    /// <param name="c">The Customer to Retrieve</param>
+    /// <returns>The CustomerAI if found, else false</returns>
     private CustomerAI GetCustomerAI(Customer c)
     {
         foreach (CustomerAI ai in customerAIs)
@@ -226,6 +240,11 @@ public class RestaurantManager : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Remove the Customer and open the Seat back up
+    /// </summary>
+    /// <param name="isAngry">Is the Customer Leaving out of Anger? (Lost Patience/Timer Ran Out)</param>
+    /// <param name="slot">Which seat is the customer in?</param>
     private void RemoveCustomer(bool isAngry, int slot)
     {
         if (isAngry) 
@@ -234,11 +253,13 @@ public class RestaurantManager : MonoBehaviour
 
             //change to mad sprite?
             slots[slot].sprite = GetCustomerAI(seats[0]).spriteMad;
+            GameManager.Instance.SetScore(GameManager.Instance.GetScore() - 1);
             //WaitForSeconds(3);
         }   
         else
         {
             //not Angry
+            GameManager.Instance.SetScore(GameManager.Instance.GetScore() + 1);
         }
         //remove character
         slots[slot].gameObject.SetActive(false);
@@ -247,8 +268,15 @@ public class RestaurantManager : MonoBehaviour
         timers[slot] = 0.0f;
     }
     //ServeCustomer
+    public void ServeCustomer()
+    { 
+        
+    }
     //Take Order
-    //Start Customer Timer
+    public void TakeOrder()
+    { 
+    
+    }
     //Fail Customer
     void FailCustomer()
     { 
@@ -297,7 +325,7 @@ public class RestaurantManager : MonoBehaviour
     {
         Quit_No();
         OnUnPause();
-        GameManager.Instance.OnToTitle();
+        //GameManager.Instance.OnToTitle();
     }
     public void Quit_No()
     {
@@ -379,22 +407,27 @@ public class RestaurantManager : MonoBehaviour
     public void Drinks_Beer()
     {
         Debug.Log("beer");
+        items.Add("beer");
     }
     public void Drinks_Sake()
     {
         Debug.Log("sake");
+        items.Add("sake");
     }
     public void Drinks_Shochu()
     {
         Debug.Log("shochu");
+        items.Add("shochu");
     }
     public void Drinks_Whiskey()
     {
         Debug.Log("whiskey");
+        items.Add("whiskey");
     }
 
     public void Drinks_Fridge()
     {
+        //not implemented
         Debug.Log("fridge");
     }
     #endregion
