@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.Burst.Intrinsics;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -30,37 +31,43 @@ public class RestaurantManager : MonoBehaviour
     [SerializeField] GameObject quitConfirmUI;
     [SerializeField] GameObject customerInfoUI;
     [SerializeField] GameObject customerUI;
+    [SerializeField] TMP_Text orderDisplay;
     [Header("Area Specific UI")]
     [SerializeField] GameObject kitchenUI;
     [SerializeField] GameObject barUI;
     [SerializeField] GameObject drinksUI;
+    [Header("Customers")]
     [SerializeField] Image[] slots = new Image[3];
+    [SerializeField] Button[] takeOrderButtons = new Button[3];
+    [SerializeField] Button[] serveOrderButtons = new Button[3];
     //General
     Camera gameCamera = null;
     int[] x_Location = { -25, 0, 25 };
     bool paused = false;
     //Customer Stuff
     bool canSeat = true;
-    float coolDown = 30.0f;
+    float coolDown = 15.0f;
     bool done;
 
     Customer[] seats = { null, null, null };
     float[] timers = { 0.0f, 0.0f, 0.0f };
-    CustomerAI[] customerAIs =
-    {
-        new CustomerAI("Akio Tanaka","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png","sake"),
-        new CustomerAI("Haruto Nakamura","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png","beer"),
-        new CustomerAI("Hayato Kami","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png","beer"),
-        new CustomerAI("Logan Smith","Assets/Art/Characters/SpriteTemp.png","Assets/Art/Characters/SpriteTemp_Mad.png","whiskey")
-    };
-    List<Customer> hasServed = new List<Customer>(); 
+    List<CustomerAI> customerAIs = new List<CustomerAI>();
+    
+    List<Customer> hasServed = new List<Customer>(4); 
 
     //Serve Customers
     List<string> items = new List<string>();
+    List<string> orders = new List<string>(3);
+    bool[] served = { false, false, false };
 
     void Awake()
     {
         gameCamera = GameObject.FindGameObjectWithTag("GameCamera").GetComponent<Camera>();
+
+        customerAIs.Add(new CustomerAI("Akio Tanaka", "Assets/Art/Characters/SpriteTemp.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer")); //sake
+        customerAIs.Add(new CustomerAI("Haruto Nakamura", "Assets/Art/Characters/SpriteTemp.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer"));
+        customerAIs.Add(new CustomerAI("Hayato Kami", "Assets/Art/Characters/SpriteTemp.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer"));
+        customerAIs.Add(new CustomerAI("Logan Smith", "Assets/Art/Characters/SpriteTemp.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer")); //whiskey
     }
 
     private void Start()
@@ -86,6 +93,7 @@ public class RestaurantManager : MonoBehaviour
             {
                 DisableAllUI();
                 barUI.SetActive(true);
+                ReactivateSlots();
             }
         }
         else if (gameCamera.transform.position.x == x_Location[2]) //drinks
@@ -106,28 +114,64 @@ public class RestaurantManager : MonoBehaviour
         }
         
         if (canSeat == false && coolDown > 0) coolDown -= Time.deltaTime;
+        Debug.Log("Cool down: " + coolDown);
         if (coolDown <= 0 && hasServed.Count < 4)
         {
             //cooldown reset
             canSeat = true;
-            coolDown = 60;
+            coolDown = 15;
             Debug.Log("ALERT: Cool Down Reset!!");
         }
 
-        //end conditions
-        if (done && IsEmpty())
+        if (orders != null) 
         {
+            CanServeCustomer();
+        }
+
+        //end conditions
+        if (IsDone())
+        {
+            Debug.Log("DONE!!!");
             //done
             tempEnd();
         }
     }
 
+    #region Utility
+    ////
+    /// <summary>
+    /// Disables All UI In-Game
+    /// </summary>
     private void DisableAllUI()
     {
         kitchenUI.SetActive(false);
         barUI.SetActive(false);
         drinksUI.SetActive(false);
+
+        foreach (var slot in slots)
+        {
+            slot.gameObject.SetActive(false);
+        }
     }
+
+    private void ReactivateSlots()
+    {
+        if (seats[0] != null) slots[0].gameObject.SetActive(true);
+        else if (seats[1] != null) slots[1].gameObject.SetActive(true);
+        else if (seats[2] != null) slots[2].gameObject.SetActive(true);
+    }
+    private void UpdateOrdersList()
+    {
+        string temp = "";
+        foreach (var item in orders)
+        {
+            temp += item.ToString() + " ";
+        }
+
+        orderDisplay.text = temp;
+        Debug.Log("ORDERS" + orderDisplay.text);
+    }
+    #endregion
 
     #region Game Loop
     bool IsSeatOpen()
@@ -139,13 +183,19 @@ public class RestaurantManager : MonoBehaviour
         return false;
     }
 
-    bool IsEmpty()
+    bool IsDone()
     {
+        //check if all customers gone
         foreach (Customer c in seats)
         {
             if (c != null) return false;
         }
-        return true;
+        if (hasServed.Count == 4)
+        {
+            //no customers in store and all customers served
+            return true;
+        }
+        return false;
     }
 
     //seat customer
@@ -159,7 +209,6 @@ public class RestaurantManager : MonoBehaviour
         if (hasServed != null)
         {
             if (hasServed.Count == 4) done = true;
-            return;
         }
         //get slot
         if (seats[0] == null && canSeat == true)
@@ -173,9 +222,9 @@ public class RestaurantManager : MonoBehaviour
             slots[0].sprite = GetCustomerAI(seats[0]).spriteNormal;
             //start timer
             timers[0] = GetCustomerAI(seats[0]).SetTimer();
-            
             hasServed.Add(seats[0]);
             canSeat = false;
+            ShowTakeOrder(0);
         }
         else if (seats[1] == null && canSeat == true)
         {
@@ -190,12 +239,13 @@ public class RestaurantManager : MonoBehaviour
             timers[1] = GetCustomerAI(seats[0]).SetTimer();
             hasServed.Add(seats[1]);
             canSeat = false;
+            ShowTakeOrder(1);
         }
         else if (seats[2] == null && canSeat == true)
         {
             //set customer to slot
             seats[2] = GetRandomCustomer();
-            Debug.Log(seats[1]._name);
+            Debug.Log(seats[2]._name);
             if (seats[2] == null) { return; }//null check
             //put customer sprite there
             slots[2].gameObject.SetActive(true);
@@ -204,6 +254,7 @@ public class RestaurantManager : MonoBehaviour
             timers[2] = GetCustomerAI(seats[0]).SetTimer();
             hasServed.Add(seats[2]);
             canSeat = false;
+            ShowTakeOrder(2);
         }
     }
 
@@ -218,7 +269,26 @@ public class RestaurantManager : MonoBehaviour
         while (valid == false)
         {
             c = Customers.Instance.GetCustomerByIndex(Random.Range(0, 3));
-            if (!seats.Contains(c) && !hasServed.Contains(c)) valid = true;
+            //don't validate anything unless they are not null
+            if (seats != null || hasServed != null)
+            {
+                if (!seats.Contains(c) && (!hasServed.Contains(c) && hasServed != null)) valid = true;
+                if (valid == false && hasServed.Count == 4) break;
+                if (hasServed.Count == 3)
+                {
+                    //get last customer (prevent potentially infinite looping)
+                    foreach (Customer cu in Customers.Instance.customers)
+                    {
+                        if (!hasServed.Contains(cu))
+                        { 
+                            c = cu;
+                            valid = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            else valid = true;
         }
         return c;
     }
@@ -267,21 +337,92 @@ public class RestaurantManager : MonoBehaviour
         seats[slot] = null;
         timers[slot] = 0.0f;
     }
-    //ServeCustomer
-    public void ServeCustomer()
-    { 
-        
-    }
-    //Take Order
-    public void TakeOrder()
-    { 
     
-    }
-    //Fail Customer
-    void FailCustomer()
+    //Take Order
+    private void ShowTakeOrder(int slot) { takeOrderButtons[slot].gameObject.SetActive(true); }
+    public void Click_TakeOrder(GameObject button) 
     { 
+        //set ui not active
+        button.SetActive(false);
+        //Add Order to List
+        if (button == takeOrderButtons[0].gameObject) orders.Add(GetCustomerAI(seats[0]).order);
+        else if (button == takeOrderButtons[1].gameObject) orders.Add(GetCustomerAI(seats[1]).order);
+        else if (button == takeOrderButtons[2].gameObject) orders.Add(GetCustomerAI(seats[2]).order);
 
+        UpdateOrdersList();
     }
+    //ServeCustomer
+    private void CanServeCustomer()
+    {
+        //don't try anything if there are no orders or drinks poured
+        if (orders.Count == 0) return;
+        if (items.Count == 0) return;
+        //items list contains order
+        foreach (var item in seats)
+        {
+            //yes
+            if (items.Contains(GetCustomerAI(item).order))
+            {
+                //show serve button
+                if (item == seats[0] && !takeOrderButtons[0].gameObject.activeSelf) 
+                { 
+                    serveOrderButtons[0].gameObject.SetActive(true);
+                }
+                else if (item == seats[1] && !takeOrderButtons[1].gameObject.activeSelf) 
+                {
+                    serveOrderButtons[1].gameObject.SetActive(true);
+                }
+                else if (item == seats[2] && !takeOrderButtons[2].gameObject.activeSelf) 
+                { 
+                    serveOrderButtons[2].gameObject.SetActive(true); 
+                }
+
+            }
+            //no
+            else 
+            {
+                //hide serve button if active
+                if (item == seats[0] && serveOrderButtons[0].gameObject.activeSelf) 
+                    serveOrderButtons[0].gameObject.SetActive(false);
+                else if (item == seats[1] && serveOrderButtons[1].gameObject.activeSelf) 
+                    serveOrderButtons[1].gameObject.SetActive(false);
+                else if (item == seats[2] && serveOrderButtons[2].gameObject.activeSelf) 
+                    serveOrderButtons[2].gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void Click_ServeOrder(GameObject button)
+    {
+        int slot = -1;
+        //hide button
+        if (button == serveOrderButtons[0].gameObject) 
+        {
+            serveOrderButtons[0].gameObject.SetActive(false);
+            slot = 0;
+        }
+        else if (button == serveOrderButtons[1].gameObject) 
+        {
+            serveOrderButtons[1].gameObject.SetActive(false);
+            slot = 1;
+        }
+        else if (button == serveOrderButtons[2].gameObject) 
+        { 
+            serveOrderButtons[2].gameObject.SetActive(false);
+            slot = 2;
+        }
+        //get customer and ai, get order
+        string ord = GetCustomerAI(seats[slot]).order;
+        //remove order from list and remove item from availiable
+        items.RemoveAt(items.IndexOf(ord));
+        orders.RemoveAt(orders.IndexOf(ord));
+        UpdateOrdersList();
+
+        //temp
+        RemoveCustomer(false, slot);
+    }
+
+    
     #endregion
 
     #region Settings/PauseMenu
@@ -345,6 +486,14 @@ public class RestaurantManager : MonoBehaviour
     { 
         GameManager.Instance.OnToEnd();
     }
+    //Cusotmer info
+    public void Bar_CustomerInfo()
+    {
+        customerInfoUI.SetActive(true);
+        //Pause Game
+        gameUI.SetActive(false);
+        Time.timeScale = 0.0f;
+    }
     #endregion
 
     #region CustomerInfo
@@ -386,20 +535,6 @@ public class RestaurantManager : MonoBehaviour
     public void Kitchen_Bowls()
     {
         Debug.Log("bowls");
-    }
-    #endregion
-
-    #region bar
-    public void Bar_CustomerInfo()
-    {
-        customerInfoUI.SetActive(true);
-        //Pause Game
-        gameUI.SetActive(false);
-        Time.timeScale = 0.0f;
-    }
-    public void Bar_Orders()
-    {
-        Debug.Log("Orders");
     }
     #endregion
 
