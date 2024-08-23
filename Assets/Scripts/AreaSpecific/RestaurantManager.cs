@@ -78,6 +78,14 @@ public class RestaurantManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //end conditions
+        if (IsDone())
+        {
+            Debug.Log("DONE!!!");
+            //done
+            GameManager.Instance.OnToEnd();
+        }
+
         //UI
         if (gameCamera.transform.position.x == x_Location[0]) //kitchen
         {
@@ -126,14 +134,6 @@ public class RestaurantManager : MonoBehaviour
         if (orders != null) 
         {
             CanServeCustomer();
-        }
-
-        //end conditions
-        if (IsDone())
-        {
-            Debug.Log("DONE!!!");
-            //done
-            tempEnd();
         }
     }
 
@@ -358,10 +358,13 @@ public class RestaurantManager : MonoBehaviour
         if (orders.Count == 0) return;
         if (items.Count == 0) return;
         //items list contains order
-        foreach (var item in seats)
+        foreach (var item in seats) 
         {
+            //don't try if there is no customer in the seat
+            if (item == null) continue;
             //yes
-            if (items.Contains(GetCustomerAI(item).order))
+            string order = GetCustomerAI(item).order;
+            if (items.Contains(order))
             {
                 //show serve button
                 if (item == seats[0] && !takeOrderButtons[0].gameObject.activeSelf) 
@@ -482,11 +485,7 @@ public class RestaurantManager : MonoBehaviour
         GameManager.Instance.OnClickSettings();
     }
 
-    public void tempEnd()
-    { 
-        GameManager.Instance.OnToEnd();
-    }
-    //Cusotmer info
+    //Customer info
     public void Bar_CustomerInfo()
     {
         customerInfoUI.SetActive(true);
