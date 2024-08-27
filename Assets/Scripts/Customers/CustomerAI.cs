@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,20 +33,25 @@ public class CustomerAI
         switch (customer.personality)
         {
             case CustomerPersonality.Grumpy:
-                timer = 90;
+                timer = 30;
                 break;
             case CustomerPersonality.Polite:
-                timer = 210;
+                timer = 100;
                 break;
             case CustomerPersonality.Prideful:
-                timer = 120;
+                timer = 60;
                 break;
             case CustomerPersonality.Outgoing:
-                timer = 150;
+                timer = 90;
                 break;
         }
 
         return timer;
+    }
+
+    public void MadSprite()
+    { 
+        
     }
 }
 

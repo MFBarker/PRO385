@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.Burst.Intrinsics;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -46,7 +47,7 @@ public class RestaurantManager : MonoBehaviour
     bool paused = false;
     //Customer Stuff
     bool canSeat = true;
-    float coolDown = 15.0f;
+    float coolDown = 10.0f;
     bool done;
 
     Customer[] seats = { null, null, null };
@@ -64,10 +65,10 @@ public class RestaurantManager : MonoBehaviour
     {
         gameCamera = GameObject.FindGameObjectWithTag("GameCamera").GetComponent<Camera>();
 
-        customerAIs.Add(new CustomerAI("Akio Tanaka", "Assets/Art/Characters/SpriteTemp.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer")); //sake
-        customerAIs.Add(new CustomerAI("Haruto Nakamura", "Assets/Art/Characters/SpriteTemp.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer"));
-        customerAIs.Add(new CustomerAI("Hayato Kami", "Assets/Art/Characters/SpriteTemp.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer"));
-        customerAIs.Add(new CustomerAI("Logan Smith", "Assets/Art/Characters/SpriteTemp.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer")); //whiskey
+        customerAIs.Add(new CustomerAI("Akio Tanaka", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer")); //sake
+        customerAIs.Add(new CustomerAI("Haruto Nakamura", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer"));
+        customerAIs.Add(new CustomerAI("Hayato Kami", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer"));
+        customerAIs.Add(new CustomerAI("Logan Smith", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer")); //whiskey
     }
 
     private void Start()
@@ -127,13 +128,14 @@ public class RestaurantManager : MonoBehaviour
         {
             //cooldown reset
             canSeat = true;
-            coolDown = 15;
+            coolDown = 10;
             Debug.Log("ALERT: Cool Down Reset!!");
         }
 
         if (orders != null) 
         {
             CanServeCustomer();
+            DecrementTimers();
         }
     }
 
@@ -157,8 +159,8 @@ public class RestaurantManager : MonoBehaviour
     private void ReactivateSlots()
     {
         if (seats[0] != null) slots[0].gameObject.SetActive(true);
-        else if (seats[1] != null) slots[1].gameObject.SetActive(true);
-        else if (seats[2] != null) slots[2].gameObject.SetActive(true);
+        if (seats[1] != null) slots[1].gameObject.SetActive(true);
+        if (seats[2] != null) slots[2].gameObject.SetActive(true);
     }
     private void UpdateOrdersList()
     {
@@ -256,6 +258,14 @@ public class RestaurantManager : MonoBehaviour
             canSeat = false;
             ShowTakeOrder(2);
         }
+        //make sure everything is always invisible
+        if (gameCamera.transform.position.x == -25 || gameCamera.transform.position.x == 25) 
+        {
+            foreach (var slot in slots)
+            {
+                slot.gameObject.SetActive(false);
+            }
+        }
     }
 
     /// <summary>
@@ -317,14 +327,21 @@ public class RestaurantManager : MonoBehaviour
     /// <param name="slot">Which seat is the customer in?</param>
     private void RemoveCustomer(bool isAngry, int slot)
     {
+        if (seats[slot] == null) return;
         if (isAngry) 
         {
             //is Angry
 
             //change to mad sprite?
-            slots[slot].sprite = GetCustomerAI(seats[0]).spriteMad;
+            StartCoroutine(AngryAnim(slot));
             GameManager.Instance.SetScore(GameManager.Instance.GetScore() - 1);
             //WaitForSeconds(3);
+            Debug.Log("Customer Left out of Anger!");
+
+            string ord = GetCustomerAI(seats[slot]).order;
+            //remove order from list and remove item from availiable
+            orders.RemoveAt(orders.IndexOf(ord));
+            UpdateOrdersList();
         }   
         else
         {
@@ -337,7 +354,35 @@ public class RestaurantManager : MonoBehaviour
         seats[slot] = null;
         timers[slot] = 0.0f;
     }
-    
+
+    IEnumerator AngryAnim(int slot)
+    {
+        if (slots[slot] == null) yield break;
+        //change sprite
+        slots[slot].sprite = GetCustomerAI(seats[slot]).spriteMad;
+        //wait
+        yield return new WaitForSeconds(10);
+        
+    }
+
+    //decrement patience timers
+    private void DecrementTimers()
+    { 
+        for(int t = 0; t < timers.Length; t++)
+        {
+            //null check
+            if (seats[t] == null) continue;
+            //check if timer is up (customer is angry and leaves)
+            if (timers[t] <= 0) RemoveCustomer(true, 0);
+            //else decrement timer
+            else
+            {
+                timers[t] -= Time.deltaTime;
+                //Debug.Log($"Seat{t}: {timers[t]}");
+            }
+        }
+    }
+
     //Take Order
     private void ShowTakeOrder(int slot) { takeOrderButtons[slot].gameObject.SetActive(true); }
     public void Click_TakeOrder(GameObject button) 
