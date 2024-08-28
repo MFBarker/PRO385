@@ -55,5 +55,11 @@ namespace Assets.Scripts.Global
             //GameObject.FindGameObjectWithTag("SettingsUI").SetActive(false);
             this.gameObject.SetActive(false);
         }
+
+        public void HintsEnabled_Click()
+        {
+            bool hints = GameManager.Instance.GetHintsEnabled();
+            GameManager.Instance.SetHintsEnabled(!hints);
+        }
     }
 }

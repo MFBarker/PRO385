@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 /*
  Customer's AI State Machine & Sprite in-store
@@ -25,7 +18,7 @@ public class CustomerAI
         this.customer = Customers.Instance.GetCustomer(customer);
         this.spriteNormal = AssetDatabase.LoadAssetAtPath<Sprite>(spriteNormal);
         this.spriteMad = AssetDatabase.LoadAssetAtPath<Sprite>(spriteMad);
-        this.order = order;
+        this.order = (order != null) ? order : RandomOrder();
     }
 
     public float SetTimer()
@@ -49,9 +42,17 @@ public class CustomerAI
         return timer;
     }
 
-    public void MadSprite()
-    { 
-        
+    //
+    string[] drinks =
+    {
+        "beer",
+        "sake",
+        "whiskey"
+    };
+    public string RandomOrder()
+    {
+        int s = Random.Range(0, drinks.Length);
+        return drinks[s];
     }
 }
 

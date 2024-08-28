@@ -18,6 +18,7 @@ public class GameManager : Singleton<GameManager>
     bool m_mutedSFX = false;
 
     GameObject m_settingsUI = null;
+    bool m_hints = true;
 
     int m_score = 0;
     #endregion
@@ -46,14 +47,11 @@ public class GameManager : Singleton<GameManager>
     {
         if (SettingsUIPrefab != null)
         {
-            Debug.Log("test");
             if (m_settingsUI == null)
             {
                 //instantiate object
                 m_settingsUI = GameObject.Instantiate(SettingsUIPrefab);
                 m_settingsUI.transform.SetParent(GameObject.FindGameObjectWithTag("Canvas").transform, false);
-                //Enable UI
-                //Debug.Log("Null Game Object");
             }
             else
             {
@@ -89,6 +87,10 @@ public class GameManager : Singleton<GameManager>
     //score
     public int GetScore() { return m_score; }
     public void SetScore(int score) { m_score = score; }
+
+    //hints
+    public bool GetHintsEnabled() { return m_hints; }
+    public void SetHintsEnabled(bool enabled) { m_hints = enabled; }
 
     #endregion
 

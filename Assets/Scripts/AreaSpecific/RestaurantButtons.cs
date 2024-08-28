@@ -117,17 +117,14 @@ public class RestaurantButtons : MonoBehaviour
         {
             case RButtons.Kitchen:
                 //-25,0
-                Debug.Log("To Kitchen");
                 gameCamera.transform.position = kitchen;
                 break;
             case RButtons.Bar:
                 //0,0
-                Debug.Log("To Bar");
                 gameCamera.transform.position = bar;
                 break;
             case RButtons.Drinks:
                 //25,0
-                Debug.Log("To Drinks");
                 gameCamera.transform.position = drinks;
                 break;
             default:

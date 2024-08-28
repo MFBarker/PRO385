@@ -2,13 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.Burst.Intrinsics;
 using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 /*
@@ -33,6 +28,7 @@ public class RestaurantManager : MonoBehaviour
     [SerializeField] GameObject customerInfoUI;
     [SerializeField] GameObject customerUI;
     [SerializeField] TMP_Text orderDisplay;
+    [SerializeField] GameObject hintsUI;
     [Header("Area Specific UI")]
     [SerializeField] GameObject kitchenUI;
     [SerializeField] GameObject barUI;
@@ -65,10 +61,10 @@ public class RestaurantManager : MonoBehaviour
     {
         gameCamera = GameObject.FindGameObjectWithTag("GameCamera").GetComponent<Camera>();
 
-        customerAIs.Add(new CustomerAI("Akio Tanaka", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer")); //sake
-        customerAIs.Add(new CustomerAI("Haruto Nakamura", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer"));
-        customerAIs.Add(new CustomerAI("Hayato Kami", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer"));
-        customerAIs.Add(new CustomerAI("Logan Smith", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", "beer")); //whiskey
+        customerAIs.Add(new CustomerAI("Akio Tanaka", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", null)); //sake
+        customerAIs.Add(new CustomerAI("Haruto Nakamura", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", null));
+        customerAIs.Add(new CustomerAI("Hayato Kami", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", null));
+        customerAIs.Add(new CustomerAI("Logan Smith", "Assets/Art/Characters/frog-sprite.png", "Assets/Art/Characters/SpriteTemp_Mad.png", null)); //whiskey
     }
 
     private void Start()
@@ -82,7 +78,6 @@ public class RestaurantManager : MonoBehaviour
         //end conditions
         if (IsDone())
         {
-            Debug.Log("DONE!!!");
             //done
             GameManager.Instance.OnToEnd();
         }
@@ -123,14 +118,15 @@ public class RestaurantManager : MonoBehaviour
         }
         
         if (canSeat == false && coolDown > 0) coolDown -= Time.deltaTime;
-        Debug.Log("Cool down: " + coolDown);
         if (coolDown <= 0 && hasServed.Count < 4)
         {
             //cooldown reset
             canSeat = true;
             coolDown = 10;
-            Debug.Log("ALERT: Cool Down Reset!!");
         }
+
+        if (GameManager.Instance.GetHintsEnabled() == true) hintsUI.SetActive(true);
+        else hintsUI.SetActive(false);
 
         if (orders != null) 
         {
@@ -171,7 +167,6 @@ public class RestaurantManager : MonoBehaviour
         }
 
         orderDisplay.text = temp;
-        Debug.Log("ORDERS" + orderDisplay.text);
     }
     #endregion
 
@@ -200,12 +195,7 @@ public class RestaurantManager : MonoBehaviour
         return false;
     }
 
-    //seat customer
-    //wait five-ish seconds
-    //add popup for order
-    //take order
-    //start countdown (personality based)
-    //serve customer or fail
+    //Loop methods
     private void SeatCustomers()
     {
         if (hasServed != null)
@@ -217,7 +207,6 @@ public class RestaurantManager : MonoBehaviour
         {
             //set customer to slot
             seats[0] = GetRandomCustomer();
-            Debug.Log(seats[0]._name);
             if (seats[0] == null) { return; }//null check
             //put customer sprite there
             slots[0].gameObject.SetActive(true);
@@ -232,7 +221,6 @@ public class RestaurantManager : MonoBehaviour
         {
             //set customer to slot
             seats[1] = GetRandomCustomer();
-            Debug.Log(seats[1]._name);
             if (seats[1] == null) { return; }//null check
             //put customer sprite there
             slots[1].gameObject.SetActive(true);
@@ -247,7 +235,6 @@ public class RestaurantManager : MonoBehaviour
         {
             //set customer to slot
             seats[2] = GetRandomCustomer();
-            Debug.Log(seats[2]._name);
             if (seats[2] == null) { return; }//null check
             //put customer sprite there
             slots[2].gameObject.SetActive(true);
@@ -335,8 +322,6 @@ public class RestaurantManager : MonoBehaviour
             //change to mad sprite?
             StartCoroutine(AngryAnim(slot));
             GameManager.Instance.SetScore(GameManager.Instance.GetScore() - 1);
-            //WaitForSeconds(3);
-            Debug.Log("Customer Left out of Anger!");
 
             string ord = GetCustomerAI(seats[slot]).order;
             //remove order from list and remove item from availiable
@@ -478,7 +463,6 @@ public class RestaurantManager : MonoBehaviour
     public void OnPause()
     {
         paused = true;
-        Debug.Log("pause");
         Time.timeScale = 0.0f;
         pauseUI.SetActive(true);
         gameUI.SetActive(false);
@@ -514,7 +498,7 @@ public class RestaurantManager : MonoBehaviour
     {
         Quit_No();
         OnUnPause();
-        //GameManager.Instance.OnToTitle();
+        GameManager.Instance.OnToTitle();
     }
     public void Quit_No()
     {
@@ -543,7 +527,6 @@ public class RestaurantManager : MonoBehaviour
     #region CustomerInfo
     public void Click_Character() 
     {
-        Debug.Log("test");
         customerUI.SetActive(true);
     }
     public void Click_OutCharacter()
@@ -559,6 +542,7 @@ public class RestaurantManager : MonoBehaviour
     }
     #endregion
 
+    //not implemented
     #region kitchen
     public void Kitchen_Fridge()
     {
@@ -585,29 +569,19 @@ public class RestaurantManager : MonoBehaviour
     #region drinks
     public void Drinks_Beer()
     {
-        Debug.Log("beer");
         items.Add("beer");
     }
     public void Drinks_Sake()
     {
-        Debug.Log("sake");
         items.Add("sake");
     }
     public void Drinks_Shochu()
     {
-        Debug.Log("shochu");
         items.Add("shochu");
     }
     public void Drinks_Whiskey()
     {
-        Debug.Log("whiskey");
         items.Add("whiskey");
-    }
-
-    public void Drinks_Fridge()
-    {
-        //not implemented
-        Debug.Log("fridge");
     }
     #endregion
 }
