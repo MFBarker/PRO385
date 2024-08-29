@@ -2,7 +2,7 @@ Welcome to the alpha of Frog Izakaya!
 
 Project Overview:
 This game was made for a class at Neumont College within ten weeks. It was made to be a simple little mobile game where you serve the customers that come in.
-In this game, you can: taks the customers' orders, grab their drinks, and serve the customers their orders! 
+In this game, you can: taks the customers' orders, grab their drinks, and serve the customers their orders!
 
 Screenshots:
 ![image](https://github.com/user-attachments/assets/140be46e-1269-46f6-98de-5582545ac4db)
@@ -18,7 +18,9 @@ While I am rather familiar with Unity, mobile games are still pretty unfamiliar 
 Installation and Usage:
 Unfortunately there is no public install for this game (I will have to tweak a few things before it is ready for release).
 If you want to try the game, you can download the .zip file, unzip that, and load the project file into the Unity hub (Add -> Add Project From Disk).
+
 ![image](https://github.com/user-attachments/assets/2baa49d2-c24d-4943-b594-18c037729fe6)
+
 If you don't have the Unity Hub on your PC, you can download it here: https://unity.com/download.
 You may have to download version 2022.3.16f1 if you don't have it installed already.
 When you have that done, you can load up the "Title" scene and play in the Unity Editor.
@@ -29,4 +31,4 @@ What's Next?
 * Save/Load Game
 * And More! (eventually)
 
-This was a very fun project to work on for the past tem weeks, and I hope I can maybe come back to it soon.
+This was a very fun project to work on for the past tem weeks, and I hope I can maybe come back to it soon!
